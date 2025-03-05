@@ -1,14 +1,13 @@
 import mongoose from "mongoose";
 const userSchema = new mongoose.Schema({
+    avatar_url:{
+        type: String,
+    },
     name: {
         type: String,
         
     },
     username: {
-        type: String,
-        
-    },
-    leetcodeUsername: {
         type: String,
         
     },
