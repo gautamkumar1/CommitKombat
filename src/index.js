@@ -6,7 +6,7 @@ const app = express();
 import githubStatusRoutes from "./routes/github-status-routes.js";
 import scoreRoutes from "./routes/score-routes.js";
 import rankRoutes from "./routes/rank-routes.js";
-
+import aiRoutes from "./routes/ai-routes.js";
 app.use(express.json({limit: "16kb"}))
 app.use(express.urlencoded({extended: true, limit: "16kb"}))
 app.use(express.static("public"))
@@ -17,6 +17,7 @@ app.get("/", (_, res) => {
 app.use("/api/v1", githubStatusRoutes);
 app.use("/api/v1", scoreRoutes);
 app.use("/api/v1", rankRoutes);
+app.use("/api/v1", aiRoutes);
 connectDB().then(()=>{
   app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
