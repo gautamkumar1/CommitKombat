@@ -1,3 +1,4 @@
+
 import React from "react";
 import { AppNavbar } from "./components/navbar";
 import { HeroSection } from "./components/hero-section";
@@ -22,3 +23,4 @@ export default function App() {
     </div>
   );
 }
+

@@ -11,11 +11,11 @@ node_modules
 dist
 dist-ssr
 *.local
+
 node_modules/
 dist/
 .vite/
 .env
-
 
 # Editor directories and files
 .vscode/*
@@ -26,4 +26,8 @@ dist/
 *.ntvs*
 *.njsproj
 *.sln
+
 *.sw?
+=======
+*.sw?
+
