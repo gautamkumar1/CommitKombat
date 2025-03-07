@@ -2,7 +2,6 @@ import React from "react";
 import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, User, Chip, Tooltip, Card, CardHeader, CardBody } from "@heroui/react";
 import { motion } from "framer-motion";
 
-
 const mockUsers = [
   {
     id: 1,
