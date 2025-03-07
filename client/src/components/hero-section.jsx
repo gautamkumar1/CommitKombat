@@ -20,17 +20,18 @@ export function HeroSection() {
         >
           <Icon icon="lucide:flame" className="text-6xl text-danger" />
         </motion.div>
-        
-        <motion.h1 
+
+        <motion.h1
           className="text-5xl font-bold mb-6"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5, duration: 0.8 }}
         >
-          Get <span className="text-primary">Roasted</span> by AI Based on Your Coding Skills
+
+          AI-Powered <span className="text-orange-500">Roast & Rank</span> Platform for GitHub & LeetCode Warriors
         </motion.h1>
-        
-        <motion.p 
+
+        <motion.p
           className="text-xl text-default-500 mb-8"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -38,20 +39,20 @@ export function HeroSection() {
         >
           Our AI analyzes your GitHub and LeetCode profiles, assigns you a score, and then brutally roasts you with a custom nickname and emoji.
         </motion.p>
-        
+
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.9, duration: 0.8 }}
         >
-          <Button 
-            size="lg" 
-            color="primary" 
-            endContent={<Icon icon="lucide:arrow-down" />}
+          <Button
+            size="lg"
+            color="primary"
+            endContent={<Icon icon="lucide:skull" />}
             as="a"
             href="#add-user"
           >
-            Try It Now
+            🔥 Get Roasted Now
           </Button>
         </motion.div>
       </motion.div>

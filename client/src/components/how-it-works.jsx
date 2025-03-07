@@ -3,26 +3,50 @@ import { Card, CardBody, CardHeader } from "@heroui/react";
 import { motion } from "framer-motion";
 import { Icon } from "@iconify/react";
 
+// const steps = [
+//   {
+//     icon: "lucide:github",
+//     title: "GitHub Analysis",
+//     description: "We analyze your repositories, contributions, stars, and commit history to calculate your GitHub score."
+//   },
+//   {
+//     icon: "lucide:code",
+//     title: "LeetCode Evaluation",
+//     description: "Your LeetCode profile is assessed based on problems solved, difficulty levels, and consistency."
+//   },
+//   {
+//     icon: "lucide:calculator",
+//     title: "Score Calculation",
+//     description: "Our AI combines both scores using a proprietary algorithm to generate your final developer rating."
+//   },
+//   {
+//     icon: "lucide:flame",
+//     title: "Brutal Roasting",
+//     description: "Based on your score, the AI generates a personalized roast, nickname, and emoji that reflects your coding abilities."
+//   }
+// ];
+
+
 const steps = [
   {
     icon: "lucide:github",
     title: "GitHub Analysis",
-    description: "We analyze your repositories, contributions, stars, and commit history to calculate your GitHub score."
+    description: "We analyze your repositories, commits, pull requests, and followers to calculate your GitHub score."
   },
   {
     icon: "lucide:code",
     title: "LeetCode Evaluation",
-    description: "Your LeetCode profile is assessed based on problems solved, difficulty levels, and consistency."
+    description: "Your LeetCode profile is assessed based on problems solved, streaks, and difficulty ratio to measure your DSA skills."
   },
   {
     icon: "lucide:calculator",
     title: "Score Calculation",
-    description: "Our AI combines both scores using a proprietary algorithm to generate your final developer rating."
+    description: "Our Toxic AI Judge combines both GitHub and LeetCode data using a savage points system to generate your final score."
   },
   {
-    icon: "lucide:flame",
+    icon: "lucide:skull",
     title: "Brutal Roasting",
-    description: "Based on your score, the AI generates a personalized roast, nickname, and emoji that reflects your coding abilities."
+    description: "Based on your score, the AI generates a customized roast, random savage nickname, and toxic emoji set 🔥💀."
   }
 ];
 
