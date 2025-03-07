@@ -3,7 +3,6 @@ import { AppNavbar } from "./components/navbar";
 import { HeroSection } from "./components/hero-section";
 import { HowItWorks } from "./components/how-it-works";
 import { RoastingLevels } from "./components/roasting-levels";
-import { AddUserForm } from "./components/add-user-form";
 import { Leaderboard } from "./components/leaderboard";
 import { Footer } from "./components/footer";
 
@@ -13,10 +12,9 @@ export default function App() {
       <AppNavbar />
       <main>
         <HeroSection />
+        <Leaderboard />
         <HowItWorks />
         <RoastingLevels />
-        <AddUserForm />
-        <Leaderboard />
       </main>
       <Footer />
     </div>

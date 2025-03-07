@@ -48,11 +48,10 @@ export function HeroSection() {
           <Button
             size="lg"
             color="primary"
-            endContent={<Icon icon="lucide:skull" />}
             as="a"
             href="#add-user"
           >
-            🔥 Get Roasted Now
+            Get Roasted Now 🔥
           </Button>
         </motion.div>
       </motion.div>

@@ -15,8 +15,8 @@ export function Footer() {
           className="flex flex-col md:flex-row justify-between items-center gap-6"
         >
           <div className="flex items-center gap-2">
-            <Icon icon="lucide:award" className="text-primary text-2xl" />
-            <p className="font-bold">AI Roaster</p>
+            <Icon icon="lucide:git-commit" className="text-orange-500 text-2xl" />
+            <p className="font-bold">CommitKombat</p>
           </div>
           
           <div className="flex gap-6">
@@ -27,10 +27,10 @@ export function Footer() {
           
           <div className="flex gap-4">
             <Link href="https://github.com" target="_blank" aria-label="GitHub">
-              <Icon icon="lucide:github" className="text-2xl" />
+              <Icon icon="lucide:github" className="text-2xl text-orange-500" />
             </Link>
             <Link href="https://twitter.com" target="_blank" aria-label="Twitter">
-              <Icon icon="lucide:twitter" className="text-2xl" />
+              <Icon icon="lucide:twitter" className="text-2xl text-orange-500" />
             </Link>
           </div>
         </motion.div>
@@ -42,7 +42,7 @@ export function Footer() {
           transition={{ duration: 0.8, delay: 0.2 }}
           className="mt-8 text-center text-default-500 text-sm"
         >
-          © {new Date().getFullYear()} AI Roaster. All rights reserved. For entertainment purposes only.
+          © {new Date().getFullYear()} CommitKombat. Don't worry... we roast with ❤️... sometimes 💀
         </motion.div>
       </div>
     </footer>

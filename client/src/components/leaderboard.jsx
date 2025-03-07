@@ -7,8 +7,8 @@ const mockUsers = [
     id: 1,
     name: "codingwizard",
     avatar: "https://i.pravatar.cc/150?u=codingwizard",
-    githubScore: 85,
-    leetcodeScore: 92,
+    rank: 1,
+    leetcodeS: 92,
     totalScore: 89,
     nickname: "Algorithm Overlord",
     emoji: "👑"
@@ -17,7 +17,7 @@ const mockUsers = [
     id: 2,
     name: "debuggerninja",
     avatar: "https://i.pravatar.cc/150?u=debuggerninja",
-    githubScore: 76,
+    rank: 2,
     leetcodeScore: 68,
     totalScore: 72,
     nickname: "Stack Overflow Addict",
@@ -27,8 +27,7 @@ const mockUsers = [
     id: 3,
     name: "frontendmaster",
     avatar: "https://i.pravatar.cc/150?u=frontendmaster",
-    githubScore: 65,
-    leetcodeScore: 45,
+    rank: 3,
     totalScore: 55,
     nickname: "CSS Wrangler",
     emoji: "🎨"
@@ -37,8 +36,7 @@ const mockUsers = [
     id: 4,
     name: "backendguru",
     avatar: "https://i.pravatar.cc/150?u=backendguru",
-    githubScore: 90,
-    leetcodeScore: 72,
+    rank: 4,
     totalScore: 81,
     nickname: "Database Whisperer",
     emoji: "🗄️"
@@ -47,8 +45,7 @@ const mockUsers = [
     id: 5,
     name: "newbieprogrammer",
     avatar: "https://i.pravatar.cc/150?u=newbieprogrammer",
-    githubScore: 25,
-    leetcodeScore: 15,
+    rank: 5,
     totalScore: 20,
     nickname: "Copy-Paste Apprentice",
     emoji: "📋"
@@ -58,8 +55,8 @@ const mockUsers = [
 const columns = [
   { name: "USER", uid: "user" },
   { name: "NICKNAME", uid: "nickname" },
-  { name: "GITHUB", uid: "github" },
-  { name: "LEETCODE", uid: "leetcode" },
+  { name: "EMOJI", uid: "emoji" },
+  { name: "RANK", uid: "github" },
   { name: "TOTAL SCORE", uid: "score" }
 ];
 
@@ -83,10 +80,7 @@ export function Leaderboard() {
           transition={{ duration: 0.8 }}
           className="text-center mb-12"
         >
-          <h2 className="text-3xl font-bold mb-4">Developer Roast Leaderboard</h2>
-          <p className="text-default-500 max-w-2xl mx-auto">
-            See who's getting roasted the hardest. Higher scores mean more savage roasts!
-          </p>
+          <h2 className="text-3xl font-bold mb-4">Developer Roast Leaderboard 🔥</h2> <p className="text-default-500 max-w-2xl mx-auto"> Only the bravest survive here! Top devs get crowned... the rest get **brutally cooked** 💀🔥 Climb the ranks or get roasted into Stack Overflow ashes 🚽💩. </p>
         </motion.div>
 
         <motion.div
@@ -122,27 +116,21 @@ export function Leaderboard() {
                       </TableCell>
                       <TableCell>
                         <div className="flex items-center gap-2">
-                          <span>{user.emoji}</span>
                           <span>{user.nickname}</span>
                         </div>
                       </TableCell>
                       <TableCell>
-                        <Tooltip content="GitHub Score">
-                          <Chip
-                            color={getScoreColor(user.githubScore)}
-                            variant="flat"
-                          >
-                            {user.githubScore}/100
-                          </Chip>
-                        </Tooltip>
+                        <div className="flex items-center gap-2">
+                          <span>{user.emoji}</span>
+                        </div>
                       </TableCell>
                       <TableCell>
-                        <Tooltip content="LeetCode Score">
+                        <Tooltip content="Your Rank">
                           <Chip
-                            color={getScoreColor(user.leetcodeScore)}
+                            color={getScoreColor(user.rank)}
                             variant="flat"
                           >
-                            {user.leetcodeScore}/100
+                            {user.rank}
                           </Chip>
                         </Tooltip>
                       </TableCell>
@@ -150,7 +138,7 @@ export function Leaderboard() {
                         <Chip
                           color={getScoreColor(user.totalScore)}
                           size="lg"
-                          className="font-bold"
+                          variant="flat"
                         >
                           {user.totalScore}/100
                         </Chip>
