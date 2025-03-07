@@ -18,8 +18,8 @@ export function AppNavbar() {
           transition={{ duration: 0.5 }}
           className="flex items-center gap-2"
         >
-          <Icon icon="lucide:award" className="text-primary text-2xl" />
-          <p className="font-bold text-inherit">AI Roaster</p>
+          <Icon icon="lucide:git-commit" className="text-orange-500 text-2xl" />
+          <p className="font-bold text-inherit">CommitKombat</p>
         </motion.div>
       </NavbarBrand>
       <NavbarContent className="hidden sm:flex gap-4" justify="center">
@@ -40,23 +40,24 @@ export function AppNavbar() {
         </NavbarItem>
         <NavbarItem className="flex gap-2">
           <Link href="https://github.com" target="_blank" aria-label="GitHub">
-            <Icon icon="lucide:github" className="text-2xl" />
+            <Icon icon="lucide:github" className="text-orange-500 text-2xl" />
           </Link>
           <Link href="https://twitter.com" target="_blank" aria-label="Twitter">
-            <Icon icon="lucide:twitter" className="text-2xl" />
+            <Icon icon="lucide:twitter" className="text-orange-500 text-2xl" />
           </Link>
         </NavbarItem>
         <NavbarItem>
-          <Button 
-            as={Link} 
-            color="primary" 
-            href="#leaderboard" 
-            variant="flat"
-            startContent={<Icon icon="lucide:trophy" />}
-          >
-            Leaderboard
-          </Button>
-        </NavbarItem>
+  <Button 
+    as={Link} 
+    color="warning"  
+    href="#leaderboard" 
+    variant="flat"
+    startContent={<Icon icon="lucide:trophy" className="text-yellow-400" />} 
+  >
+    Leaderboard
+  </Button>
+</NavbarItem>
+
       </NavbarContent>
     </Navbar>
   );
