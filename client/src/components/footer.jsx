@@ -15,8 +15,10 @@ export function Footer() {
           className="flex flex-col md:flex-row justify-between items-center gap-6"
         >
           <div className="flex items-center gap-2">
-            <Icon icon="lucide:git-commit" className="text-orange-500 text-2xl" />
-            <p className="font-bold">CommitKombat</p>
+             <Link href="/" className="gap-2">
+                      <Icon icon="lucide:git-commit" className="text-orange-500 text-2xl" />
+                      <p className="font-bold text-inherit text-white">CommitKombat</p>
+                      </Link>
           </div>
           
           <div className="flex gap-6">

@@ -19,8 +19,10 @@ export function AppNavbar() {
           transition={{ duration: 0.5 }}
           className="flex items-center gap-2"
         >
+          <Link href="/" className="gap-2">
           <Icon icon="lucide:git-commit" className="text-orange-500 text-2xl" />
-          <p className="font-bold text-inherit">CommitKombat</p>
+          <p className="font-bold text-inherit text-white">CommitKombat</p>
+          </Link>
         </motion.div>
       </NavbarBrand>
       <NavbarContent className="hidden sm:flex gap-4" justify="center">
