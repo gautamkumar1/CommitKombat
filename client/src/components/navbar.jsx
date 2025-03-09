@@ -3,6 +3,7 @@ import { Navbar, NavbarBrand, NavbarContent, NavbarItem, Link, Button } from "@h
 import { Icon } from "@iconify/react";
 import { motion } from "framer-motion";
 import { ThemeSwitcher } from "./theme-switcher";
+import { Link as RouterLink } from 'react-router-dom';
 
 export function AppNavbar() {
   return (
@@ -47,15 +48,15 @@ export function AppNavbar() {
           </Link>
         </NavbarItem>
         <NavbarItem>
-  <Button 
-    as={Link} 
+ <Link href="/leaderboard">
+ <Button 
     color="warning"  
-    href="#leaderboard" 
     variant="flat"
     startContent={<Icon icon="lucide:trophy" className="text-yellow-400" />} 
   >
     Leaderboard
   </Button>
+ </Link>
 </NavbarItem>
 
       </NavbarContent>
