@@ -58,6 +58,27 @@ const createScore = async (req, res) => {
         return res.status(500).json({message:"Error in creating score"})
     }
 }
+const createScoreMethod = async (username) => {
+    try {
+        const statusData = await Stats.findOne({username:username});
+        if(!statusData){
+            return res.status(400).json({message:"User not found"})
+        }
+        const isScoreExists = await Score.findOne({username:username});
+        if(isScoreExists){
+            return ({message:"Score already exists"})
+        }
+        const score = calculateScore(statusData);
+        const scoreData = {
+            username:username,
+            score:score
+        }
+        const newScore = await Score.create(scoreData);
+        return {message:"Score created successfully", calculateScore:score}
+    } catch (error) {
+        return false;
+    }
+}
 
 const getTopUser = async (req,res) =>{
     try {
@@ -70,4 +91,4 @@ const getTopUser = async (req,res) =>{
     }
 }
 
-export {createScore, getTopUser}
+export {createScore, getTopUser,createScoreMethod}

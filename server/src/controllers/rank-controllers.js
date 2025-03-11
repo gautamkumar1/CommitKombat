@@ -1,25 +1,66 @@
 import Score from "../models/score-model.js";
 import Rank from "../models/rank-model.js";
+import { getGithubUserInformation } from "./github-controllers.js";
 
-const rankInitialize = async () =>{
+// const rankInitialize = async (username) =>{
+//     try {
+//         const userData = await getGithubUserInformation(username);
+//         const allScores = await Score.find().sort({ score: -1 });
+//             // Update ranks for all users
+//             const rankUpdates = allScores.map((s, index) => ({
+//                 updateOne: {
+//                     filter: { username: s.username },
+//                     update: { username: s.username, rank: index + 1 },
+//                     upsert: true
+//                 }
+//             }));
+//             await Rank.bulkWrite(rankUpdates);
+//             console.log("Rank updated successfully");
+//             return true;
+//     } catch (error) {
+//         console.log(error,"Error in rank initialization");
+//         return false;
+//     }
+// }
+const rankInitialize = async (username) => {
     try {
+        // Fetch user details from GitHub
+        const userData = await getGithubUserInformation(username);
+
+        // Extract necessary user details
+        const userDetails = {
+            avatar_url: userData.avatar_url || "",
+            username: userData.login,
+            location: userData.location || "",
+        };
+
+        // Fetch all scores and sort by highest score
         const allScores = await Score.find().sort({ score: -1 });
-            // Update ranks for all users
-            const rankUpdates = allScores.map((s, index) => ({
-                updateOne: {
-                    filter: { username: s.username },
-                    update: { username: s.username, rank: index + 1 },
-                    upsert: true
-                }
-            }));
-            await Rank.bulkWrite(rankUpdates);
-            console.log("Rank updated successfully");
-            return true;
+
+        // Update ranks for all users
+        const rankUpdates = allScores.map((s, index) => ({
+            updateOne: {
+                filter: { username: s.username },
+                update: {
+                    username: s.username,
+                    rank: index + 1,
+                    score: s.score,
+                    avatar_url: s.username === username ? userDetails.avatar_url : "",
+                    location: s.username === username ? userDetails.location : "",
+                },
+                upsert: true,
+            },
+        }));
+
+        await Rank.bulkWrite(rankUpdates);
+        console.log("Rank updated successfully");
+        return true;
     } catch (error) {
-        console.log(error,"Error in rank initialization");
+        console.log(error, "Error in rank initialization");
         return false;
     }
-}
+};
+
 const userInTop10Rank = async (username) =>{
     try {
      const top10Rank = await Rank.find().sort({rank:1}).limit(10);

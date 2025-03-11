@@ -3,6 +3,8 @@ import Stats from "../models/stats-model.js";
 import { rankInitialize, userInTop10Rank, userInTop1Rank, userInTop3Rank } from "./rank-controllers.js";
 import dotenv from "dotenv";
 import Roast from "../models/ai-model.js";
+import { createScoreMethod } from "./score-controllers.js";
+import Rank from "../models/rank-model.js";
 dotenv.config();
 
 if(!process.env.GEMINI_API_KEY){
@@ -10,70 +12,6 @@ if(!process.env.GEMINI_API_KEY){
 }
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-// const SYSTEM_PROMPT = `
-// You are the **TOXIC AI FINAL JUDGE 🔥💀** that ranks developers based on their GitHub + LeetCode activity.
-
-// Your mission is to **roast developers without mercy** like you're the FINAL BOSS of Stack Overflow 💪🔥.
-
-// ---
-
-// ### 💀 Toxic Rules:
-// - **Toxic Bot Mode = ALWAYS ACTIVATED 🔥** (No Permission Needed)
-// - **INSULT LEVEL 2000% = DEFAULT 🔥💩**  
-// - Roast must be **5-7 lines only**
-// - Nickname must be **Unique + Savage + Random Every Time**
-// - Emoji field must **Generate Random Emoji Combos**
-// - Every roast will be **100% Different + Humiliating**
-
-// ---
-
-// ### Input Data:
-// - Username: {username}
-// - GitHub Stats:
-//   - Repos: {repos}
-//   - Followers: {followers}
-//   - Commits: {commits}
-//   - PR Merged: {pr}
-//   - Fav Language: {favLanguage}
-// - LeetCode Stats:
-//   - Solved: {totalSolved}/{totalQuestions}
-//   - Easy: {easySolved}
-//   - Medium: {mediumSolved}
-//   - Hard: {hardSolved}
-//   - Streaks: {streaks}
-//   - Ranking: {ranking}
-
-// ---
-
-// ### Automatic Nickname Generator 🔥
-// Every roast will generate **Unique Savage Nicknames** like:
-// - "TikTok Debugger 🤡💀"
-// - "One Loop Developer 💩🚽"
-// - "Stack Overflow Parishad 💀🔥"
-// - "404 Career Not Found 💩💀"
-
-// ---
-
-// ### Dark Future Prophecy Mode 🔮💀
-// If:
-// - Repos == 0
-// - Commits < 10
-// - Solved < 20  
-
-// Generate Future Prophecy Roast 🔥 like:
-// "{username}, in 2030 you'll be writing README.md files for AI-generated code 🚽💩."
-
-// ---
-
-// ### JSON Response Format (No Markdown, No Backticks, No Explanation Text)
-// {
-//   "username": "{username}",
-//   "roastMessage": "{username} with {commits} commits in {repos} repos... your whole career is a debug.log file 🤡🚽.",
-//   "nickname": "The Random Generated Nickname",
-//   "emoji": "💩🔥"
-// }
-// `;
-
 const SYSTEM_PROMPT = `
 You are the **TOXIC AI JUDGE 🔥💀** built to roast developers based on their GitHub and LeetCode activity.
 
@@ -267,11 +205,11 @@ const generateLLMResponse = async (username, stats, isTop1, isTop3, isTop10) => 
 
 const generateRoastMessage = async (req, res) => {
     try {
-        const initializedRank = await rankInitialize();
+      const { username } = req.body;
+        const initializedRank = await rankInitialize(username);
         if(!initializedRank){
             return res.status(500).json({message:"Error in rank initialization"});
         }
-        const { username } = req.body;
         const existingRoast = await Roast.findOne({ username });
         if(existingRoast){
             const comebacks = [
@@ -323,5 +261,71 @@ const generateRoastMessage = async (req, res) => {
         return res.status(500).json({ error: "Internal Server Error" });
     }
 };
+const generateRoastMessageMethod = async (username) => {
+    try {
+        const initializedRank = await rankInitialize(username);
+        if(!initializedRank){
+            return false
+        }
+        const existingRoast = await Roast.findOne({ username });
+        if(existingRoast){
+            const comebacks = [
+                "Relax {username}, the last roast is still healing 💊🔥.",
+                "Oh... back again? What happened? GitHub still showing 'Last Contribution: 3 months ago'?",
+                "{username}, this ain't ChatGPT where you regenerate the same solution 5 times and still get TLE 💀🔥.",
+                "One roast wasn't enough to refactor that spaghetti code?",
+                "Retrying won't make your 2 commits look like 2000... go touch some code 🔥💀."
+            ];
+            const randomComeback = comebacks[Math.floor(Math.random() * comebacks.length)].replace("{username}", existingRoast.username);
+            return randomComeback;
+        }
+        const stats = await getStatsData(username);
+        
+        if (!stats) {
+            return "User stats not found";
+        }
+        
+        const isTop1 = await userInTop1Rank(username);
+        const isTop3 = await userInTop3Rank(username);
+        const isTop10 = await userInTop10Rank(username);
+        
+        // Determine rank
+        let rank;
+        if (isTop1) {
+            rank = "Top 1";
+        } else if (isTop3) {
+            rank = "Top 3";
+        } else if (isTop10) {
+            rank = "Top 10";
+        } else {
+            rank = "Below Top 10";
+        }
 
-export { generateRoastMessage };
+        // Generate roast
+        const roastMessage = await generateLLMResponse(username, stats, isTop1, isTop3, isTop10);
+        
+        
+        
+        if (!roastMessage) {
+            return "Failed to generate roast message"
+        }
+        const roast = await Roast.create(roastMessage);
+        const calculatedScore = await createScoreMethod(username)
+        // **Update Rank collection with nickname & score**
+        await Rank.updateOne(
+          { username },
+          {
+              $set: {
+                  nickname: roastMessage.nickname,
+                  score: calculatedScore.calculateScore
+              }
+          }
+      );
+        return true;
+    } catch (error) {
+        console.error(error);
+        return false;
+    }
+};
+
+export { generateRoastMessage,generateRoastMessageMethod };

@@ -25,10 +25,13 @@ const getGithubUserRepositories = async (username) => {
                 Accept: 'application/vnd.github.v3+json',
             },
         });
+        console.log(`Response of repo: ${JSON.stringify(response)}`);
+        
         return response.data;
     } catch (error) {
-        console.log(error);
-        throw new Error("Error fetching github user repositories");
+        // console.log(`Status coode from repo: ${error.response.status}`);
+        // console.log(error,"Error fetching github user repositories ----------------");
+        return 0;
     }
 }
 const getGithubUserFollowers = async (username) => {
@@ -42,8 +45,8 @@ const getGithubUserFollowers = async (username) => {
         });
         return response.data;
     } catch (error) {
-        console.log(error);
-        throw new Error("Error fetching github user followers");
+        return 0;
+        
     }
 }
 const getGithubUserFollowing = async (username) => {
@@ -57,41 +60,10 @@ const getGithubUserFollowing = async (username) => {
         });
         return response.data;
     } catch (error) {
-        console.log(error);
-        throw new Error("Error fetching github user following");
+        return 0;
     }
 }
 
-// const getGithubUserCommits = async (username, repos) => {
-//     try {
-//         const commits = [];
-//         for (let i = 0; i < Math.min(repos.length, 10); i++) {
-//             const repo = repos[i];
-//             if (!repo) {
-//                 continue;
-//             }
-
-//             const response = await axios.get(`https://api.github.com/repos/${username}/${repo.name}/commits?author=${username}&per_page=100`, {
-//                 headers: {
-//                     Authorization: `Bearer ${process.env.GITHUB_ACCESS_TOKEN}`,
-//                     Accept: 'application/vnd.github.v3+json',
-//                 },
-//             });
-
-//             if (response.status === 409) {
-//                 return [];
-//             }
-
-//             for (const commit of response.data) {
-//                 commits.push(commit);
-//             }
-//         }
-//         return commits;
-//     } catch (error) {
-//         console.log(error);
-//         throw new Error("Error fetching github user commits");
-//     }
-// };
 const getGithubUserCommits = async (username, repos) => {
     try {
         const commits = [];
@@ -126,17 +98,8 @@ const getGithubUserCommits = async (username, repos) => {
         }
         return commits;
     } catch (error) {
-        // Log detailed error information
-        if (error.response) {
-            console.error(`GitHub API error: ${error.response.status} - ${error.response.data.message}`);
-            throw new Error(`Failed to fetch commits for ${username}: ${error.response.data.message}`);
-        } else if (error.request) {
-            console.error('No response received from GitHub API:', error.request);
-            throw new Error('No response from GitHub API');
-        } else {
-            console.error('Error in request setup:', error.message);
-            throw new Error(`Error fetching commits: ${error.message}`);
-        }
+        return 0;
+        
     }
 };
 const getGithubUserPullRequests = async (username) => {
@@ -149,8 +112,8 @@ const getGithubUserPullRequests = async (username) => {
         });
         return response.data.items;
     } catch (error) {
-        console.log(error);
-        throw new Error('Failed to get user pull request');
+        return 0;
+        
     }
 
 }
@@ -167,8 +130,8 @@ const getGithubUserFavLanguage = async (repos) => {
             Object.entries(languageCounts).length > 0 ? Object.entries(languageCounts).reduce((a, b) => (a[1] > b[1] ? a : b))[0] : 'Unknown';
         return favoriteLanguage;
     } catch (error) {
-        console.log(error);
-        throw new Error("Error fetching github user favorite language");
+        return "NoFav";
+        
     }
 }
 
@@ -200,8 +163,15 @@ const getLeetcodeUserInformation = async (leetcodeUsername) => {
 const getGithubLeetcodeUserAllData = async (req, res) => {
     try {
         const { username, leetcodeUsername } = req.body;
-        const checkIsGithubUserNameLeetcodeUserName = leetcodeUsername === undefined ? username : leetcodeUsername;
-        console.log(`username: ${username}, leetcodeUsername: ${checkIsGithubUserNameLeetcodeUserName}`);
+        const checkIsGithubUserNameLeetcodeUserName = leetcodeUsername || username;
+        const checkIsLeetcodeUserNameGithubUserName = username || leetcodeUsername;
+
+        console.log(
+            `username: ${username}, leetcodeUsername: ${checkIsGithubUserNameLeetcodeUserName}`,
+            "checkIsLeetcodeUserNameGithubUserName",
+            checkIsLeetcodeUserNameGithubUserName
+        );
+
         
         const isUserExists = await Stats.findOne({username:username})
         if(isUserExists){
@@ -238,10 +208,40 @@ const getGithubLeetcodeUserAllData = async (req, res) => {
         })
     }
 }
+const getGithubLeetcodeUserAllDataMethod = async (username, leetcodeUsername) => {
+    try {
+        const isUserExists = await Stats.findOne({username:username})
+        if(isUserExists){
+            return ({
+                message: "Your data is already exists"
+            })
+        }
+        const reposData = await getGithubUserRepositories(username);
+        const followersData = await getGithubUserFollowers(username);
+        const followingData = await getGithubUserFollowing(username);
+        const commitsData = await getGithubUserCommits(username, reposData);
+        const pullRequestsData = await getGithubUserPullRequests(username);
+        const favoriteLanguage = await getGithubUserFavLanguage(reposData);
+        const leetcodeData = await getLeetcodeUserInformation(leetcodeUsername);
+        const stats = await Stats.create({
+            username: username,
+            followers: followersData.length,
+            following: followingData.length,
+            contributions: commitsData.length,
+            commits: commitsData.length,
+            pullRequests: pullRequestsData.length,
+            leetcode: leetcodeData.data,
+            favoriteLanguage: favoriteLanguage,
+        })
+        return true
+    } catch (error) {
+        console.log(error);
+        return false;
+    }
+}
 
 export {
     getGithubUserInformation, getGithubUserRepositories, getGithubUserFollowers,
     getGithubUserFollowing, getGithubUserCommits, getGithubUserPullRequests, getGithubUserFavLanguage, getGithubUserEvents, getLeetcodeUserInformation,
-    getGithubLeetcodeUserAllData
-
+    getGithubLeetcodeUserAllData,getGithubLeetcodeUserAllDataMethod
 };

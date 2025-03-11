@@ -7,6 +7,7 @@ import githubStatusRoutes from "./routes/github-status-routes.js";
 import scoreRoutes from "./routes/score-routes.js";
 import rankRoutes from "./routes/rank-routes.js";
 import aiRoutes from "./routes/ai-routes.js";
+import mainRoutes from "./routes/main-routes.js";
 app.use(express.json({limit: "16kb"}))
 app.use(express.urlencoded({extended: true, limit: "16kb"}))
 app.use(express.static("public"))
@@ -18,6 +19,7 @@ app.use("/api/v1", githubStatusRoutes);
 app.use("/api/v1", scoreRoutes);
 app.use("/api/v1", rankRoutes);
 app.use("/api/v1", aiRoutes);
+app.use("/api/v1", mainRoutes);
 connectDB().then(()=>{
   app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
