@@ -1,109 +1,73 @@
 import { useState, useEffect } from "react"
-import {
-  GitCommitIcon,
-  UsersIcon,
-  FolderGitIcon,
-  StarIcon,
-  GitPullRequestIcon,
-  AlertCircleIcon,
-  GitForkIcon,
-} from "lucide-react"
+import { StarIcon, Search } from "lucide-react"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../components/ui/table"
 import { Avatar, AvatarFallback, AvatarImage } from "../../components/ui/avatar"
 import { Badge } from "../../components/ui/badge"
-
-// Mock data for GitHub users
-const mockUsers = [
-  {
-    id: 1,
-    username: "techmaster",
-    name: "Alex Johnson",
-    avatar: "/placeholder.svg?height=80&width=80",
-    score: 98,
-    commits: 1243,
-    followers: 542,
-    repositories: 87,
-    stars: 2341,
-    forks: 432,
-    pullRequests: 321,
-    issues: 154,
-    trend: "up",
-  },
-  {
-    id: 2,
-    username: "codewarrior",
-    name: "Samantha Lee",
-    avatar: "/placeholder.svg?height=80&width=80",
-    score: 95,
-    commits: 987,
-    followers: 621,
-    repositories: 65,
-    stars: 1876,
-    forks: 321,
-    pullRequests: 287,
-    issues: 132,
-    trend: "up",
-  },
-  {
-    id: 3,
-    username: "devninja",
-    name: "Marcus Chen",
-    avatar: "/placeholder.svg?height=80&width=80",
-    score: 92,
-    commits: 876,
-    followers: 432,
-    repositories: 54,
-    stars: 1654,
-    forks: 287,
-    pullRequests: 243,
-    issues: 121,
-    trend: "down",
-  },
-  {
-    id: 4,
-    username: "pixelcoder",
-    name: "Jamie Wilson",
-    avatar: "/placeholder.svg?height=80&width=80",
-    score: 89,
-    commits: 765,
-    followers: 387,
-    repositories: 43,
-    stars: 1432,
-    forks: 254,
-    pullRequests: 198,
-    issues: 98,
-    trend: "up",
-  },
-  {
-    id: 5,
-    username: "bytebender",
-    name: "Taylor Rodriguez",
-    avatar: "/placeholder.svg?height=80&width=80",
-    score: 86,
-    commits: 654,
-    followers: 321,
-    repositories: 38,
-    stars: 1287,
-    forks: 198,
-    pullRequests: 176,
-    issues: 87,
-    trend: "same",
-  },
-]
+import { Input } from "../../components/ui/input"
+import axios from "axios"
 
 export function Leaderboard() {
-  const [users, setUsers] = useState(mockUsers)
   const [isLoading, setIsLoading] = useState(true)
-
+  const [leaderboardData, setLeaderBoardData] = useState([])
+  const [totalUsers, setTotalUsers] = useState(0)
+  const [totalFilteredUsers, setTotalFilteredUsers] = useState(0)
+  const [totalPages, setTotalPages] = useState(1)
+  const [currentPage, setCurrentPage] = useState(1)
+  const [searchQuery, setSearchQuery] = useState("")
+  const [debouncedSearch, setDebouncedSearch] = useState("")
+  
+  // Handle search input change
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value)
+  }
+  
+  // Debounce search input to avoid excessive API calls
   useEffect(() => {
-    // Simulate loading data
     const timer = setTimeout(() => {
-      setIsLoading(false)
-    }, 1000)
-
+      setDebouncedSearch(searchQuery)
+      setCurrentPage(1) // Reset to first page on new search
+    }, 500)
+    
     return () => clearTimeout(timer)
-  }, [])
+  }, [searchQuery])
+  
+  const getLeaderboardLists = async (pageNum, search = "") => {
+    try {
+      setIsLoading(true)
+      const response = await axios.get(
+        `${import.meta.env.VITE_BACKEND_URL}/getLeaderboardLists?page=${pageNum}&search=${search}`
+      )
+      if(response.status === 200){
+        setLeaderBoardData(response.data.leaderboardData)
+        setTotalUsers(response.data.totalUsers) // Always shows total users regardless of search
+        setTotalFilteredUsers(response.data.totalFilteredUsers)
+        setTotalPages(response.data.totalPages)
+      }
+    } catch (error) {
+      console.log(error)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+  
+  // Fetch data on component mount and when search or pagination changes
+  useEffect(() => {
+    getLeaderboardLists(currentPage, debouncedSearch)
+  }, [currentPage, debouncedSearch])
+  
+  const handleNextPage = () => {
+    if(currentPage < totalPages){
+      setCurrentPage(currentPage + 1)
+    }
+  }
+  
+  const handlePrevPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1)
+    }
+  }
 
+  // Loading indicator
   if (isLoading) {
     return (
       <div className="flex justify-center items-center h-64">
@@ -117,113 +81,145 @@ export function Leaderboard() {
   }
 
   return (
-    <div className="overflow-x-auto">
-      <Table>
-        <TableHeader>
-          <TableRow className="border-b border-slate-700 hover:bg-slate-800/50">
-            <TableHead className="w-12 text-center">Rank</TableHead>
-            <TableHead>User</TableHead>
-            <TableHead className="text-center">
-              <div className="flex items-center justify-center gap-1">
-                <StarIcon className="h-4 w-4 text-amber-300" />
-                <span>Score</span>
-              </div>
-            </TableHead>
-            <TableHead className="hidden md:table-cell text-center">
-              <div className="flex items-center justify-center gap-1">
-                <GitCommitIcon className="h-4 w-4 text-cyan-400" />
-                <span>Commits</span>
-              </div>
-            </TableHead>
-            <TableHead className="hidden md:table-cell text-center">
-              <div className="flex items-center justify-center gap-1">
-                <UsersIcon className="h-4 w-4 text-blue-400" />
-                <span>Followers</span>
-              </div>
-            </TableHead>
-            <TableHead className="hidden lg:table-cell text-center">
-              <div className="flex items-center justify-center gap-1">
-                <FolderGitIcon className="h-4 w-4 text-purple-400" />
-                <span>Repos</span>
-              </div>
-            </TableHead>
-            <TableHead className="hidden lg:table-cell text-center">
-              <div className="flex items-center justify-center gap-1">
-                <GitForkIcon className="h-4 w-4 text-green-400" />
-                <span>Forks</span>
-              </div>
-            </TableHead>
-            <TableHead className="hidden lg:table-cell text-center">
-              <div className="flex items-center justify-center gap-1">
-                <GitPullRequestIcon className="h-4 w-4 text-orange-400" />
-                <span>PRs</span>
-              </div>
-            </TableHead>
-            <TableHead className="hidden lg:table-cell text-center">
-              <div className="flex items-center justify-center gap-1">
-                <AlertCircleIcon className="h-4 w-4 text-red-400" />
-                <span>Issues</span>
-              </div>
-            </TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {users.map((user, index) => (
-            <TableRow
-              key={user.id}
-              className="border-b border-slate-800 hover:bg-slate-800/50 transition-colors duration-200"
-            >
-              <TableCell className="font-medium text-center">
-                <Badge
-                  variant="outline"
-                  className={`
-                    ${
-                      index === 0
-                        ? "bg-amber-500/20 text-amber-300 border-amber-500/50"
-                        : index === 1
-                          ? "bg-slate-400/20 text-slate-300 border-slate-400/50"
-                          : index === 2
-                            ? "bg-amber-700/20 text-amber-600 border-amber-700/50"
-                            : "bg-slate-800 text-slate-400 border-slate-700"
-                    }
-                  `}
-                >
-                  {index + 1}
-                </Badge>
-              </TableCell>
-              <TableCell>
-                <div className="flex items-center gap-3">
-                  <Avatar className="border border-slate-700">
-                    <AvatarImage src={user.avatar} alt={user.name} />
-                    <AvatarFallback className="bg-slate-800">
-                      {user.username.substring(0, 2).toUpperCase()}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div>
-                    <div className="font-semibold">{user.name}</div>
-                    <div className="text-sm text-slate-400">@{user.username}</div>
-                  </div>
-                </div>
-              </TableCell>
-              <TableCell className="text-center">
+    <div className="space-y-6">
+      {/* User Count Header */}
+      <div className="bg-gradient-to-r from-indigo-900/50 to-purple-900/50 p-4 rounded-lg border border-indigo-800/50 shadow-lg">
+        <h2 className="text-center text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-purple-400">
+          Developer Leaderboard
+        </h2>
+        <p className="text-center mt-1 text-lg">
+          <span className="font-bold text-cyan-300">{totalUsers}</span>
+          <span className="text-slate-300"> developers competing for the top spot</span>
+          {debouncedSearch && (
+            <span className="text-slate-300 ml-2">
+              ({totalFilteredUsers} matching "{debouncedSearch}")
+            </span>
+          )}
+        </p>
+      </div>
+      
+      {/* Search Bar */}
+      <div className="relative">
+        <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+          <Search className="h-5 w-5 text-slate-400" />
+        </div>
+        <Input
+          type="text"
+          placeholder="Search by username, nickname or location..."
+          value={searchQuery}
+          onChange={handleSearchChange}
+          className="pl-10 bg-slate-800/50 border-slate-700 focus:border-cyan-500 focus:ring-cyan-500 text-slate-200 placeholder-slate-400"
+        />
+      </div>
+      
+      {/* Leaderboard Table */}
+      <div className="overflow-x-auto rounded-lg border border-slate-800 shadow-lg">
+        <Table>
+          <TableHeader>
+            <TableRow className="border-b border-slate-700 hover:bg-slate-800/50">
+              <TableHead className="w-12 text-center">Rank</TableHead>
+              <TableHead>Developer</TableHead>
+              <TableHead className="hidden sm:table-cell">Nickname</TableHead>
+              <TableHead className="hidden md:table-cell">Location</TableHead>
+              <TableHead className="text-center">
                 <div className="flex items-center justify-center gap-1">
-                  <span className="text-lg font-bold text-cyan-400">{user.score}</span>
-                  {user.trend === "up" && <span className="text-green-400 text-xs">▲</span>}
-                  {user.trend === "down" && <span className="text-red-400 text-xs">▼</span>}
-                  {user.trend === "same" && <span className="text-slate-400 text-xs">■</span>}
+                  <StarIcon className="h-4 w-4 text-amber-300" />
+                  <span>Score</span>
                 </div>
-              </TableCell>
-              <TableCell className="hidden md:table-cell text-center">{user.commits.toLocaleString()}</TableCell>
-              <TableCell className="hidden md:table-cell text-center">{user.followers.toLocaleString()}</TableCell>
-              <TableCell className="hidden lg:table-cell text-center">{user.repositories.toLocaleString()}</TableCell>
-              <TableCell className="hidden lg:table-cell text-center">{user.forks.toLocaleString()}</TableCell>
-              <TableCell className="hidden lg:table-cell text-center">{user.pullRequests.toLocaleString()}</TableCell>
-              <TableCell className="hidden lg:table-cell text-center">{user.issues.toLocaleString()}</TableCell>
+              </TableHead>
             </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+          </TableHeader>
+          <TableBody>
+            {leaderboardData.length > 0 ? (
+              leaderboardData.map((user, index) => (
+                <TableRow
+                  key={user._id || index}
+                  className="border-b border-slate-800 hover:bg-slate-800/50 transition-colors duration-200"
+                >
+                  <TableCell className="font-medium text-center">
+                    <Badge
+                      variant="outline"
+                      className={`
+                        ${
+                          (user.rank === 1)
+                            ? "bg-amber-500/20 text-amber-300 border-amber-500/50"
+                            : (user.rank === 2)
+                              ? "bg-slate-400/20 text-slate-300 border-slate-400/50"
+                              : (user.rank === 3)
+                                ? "bg-amber-700/20 text-amber-600 border-amber-700/50"
+                                : "bg-slate-800 text-slate-400 border-slate-700"
+                        }
+                      `}
+                    >
+                      {user.rank}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex items-center gap-3">
+                      <Avatar className="border border-slate-700">
+                        <AvatarImage src={user.avatar_url} alt={user.username} />
+                        <AvatarFallback className="bg-slate-800">
+                          {user.username ? user.username.substring(0, 2).toUpperCase() : "NA"}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div>
+                        <div className="font-semibold">{user.username}</div>
+                      </div>
+                    </div>
+                  </TableCell>
+                  <TableCell className="hidden sm:table-cell text-slate-300">
+                    {user.nickname || "—"}
+                  </TableCell>
+                  <TableCell className="hidden md:table-cell text-slate-400">
+                    {user.location || "Not specified"}
+                  </TableCell>
+                  <TableCell className="text-center">
+                    <div className="flex items-center justify-center gap-1">
+                      <span className={`text-lg font-bold ${
+                        (user.rank <= 3) ? "text-cyan-400" : "text-slate-300"
+                      }`}>
+                        {user.score}
+                      </span>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={5} className="text-center py-8 text-slate-400">
+                  {debouncedSearch 
+                    ? `No results found for "${debouncedSearch}"`
+                    : "No leaderboard data available"
+                  }
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </div>
+
+      {/* Pagination Controls */}
+      {totalPages > 1 && (
+        <div className="flex justify-center gap-4 mt-4">
+          <button
+            onClick={handlePrevPage}
+            disabled={currentPage === 1}
+            className="px-4 py-2 rounded bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
+          >
+            Previous
+          </button>
+          <span className="flex items-center px-4 py-2 text-slate-300">
+            Page {currentPage} of {totalPages}
+          </span>
+          <button
+            onClick={handleNextPage}
+            disabled={currentPage === totalPages}
+            className="px-4 py-2 rounded bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
+          >
+            Next
+          </button>
+        </div>
+      )}
     </div>
   )
 }
-
