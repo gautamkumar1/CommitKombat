@@ -37,28 +37,47 @@ const createScoreAndRoastMsg = async (req, res) => {
     }
 }
 
-const leaderboardLists = async (req,res) =>{
+const leaderboardLists = async (req, res) => {
     try {
-        const page = 1;
-        const limit = 10;
-        const leaderboardData = await Rank.find()
+      const page = parseInt(req.query.page) || 1;
+      const limit = 10;
+      const searchQuery = req.query.search || '';
+      
+      // Build search filter
+      let filter = {};
+      if (searchQuery) {
+        filter = {
+          $or: [
+            { username: { $regex: searchQuery, $options: 'i' } },
+            { nickname: { $regex: searchQuery, $options: 'i' } },
+            { location: { $regex: searchQuery, $options: 'i' } }
+          ]
+        };
+      }
+      
+      // Get filtered data
+      const leaderboardData = await Rank.find(filter)
         .sort({ rank: 1 })
-        .skip((page-1)*limit) // Skip first (page - 1) * limit records
-        .limit(limit) // Get only 'limit' records
-        const totalUsers = await Rank.countDocuments();
-        return res.status(200).json({
-            totalUsers:totalUsers,
-            totalPages: Math.ceil(totalUsers / limit),
-            currentPage: page,
-            leaderboardData:leaderboardData
-        })
-        
+        .skip((page - 1) * limit)
+        .limit(limit);
+    const totalFilteredUsers = await Rank.countDocuments(filter);
+    // Count total users (regardless of filter)
+    const totalUsers = await Rank.countDocuments();
+      
+      
+      return res.status(200).json({
+        totalUsers: totalUsers,
+        totalFilteredUsers: totalFilteredUsers,
+        totalPages: Math.ceil(totalFilteredUsers / limit),
+        currentPage: page,
+        leaderboardData: leaderboardData
+  
+      });
+    } catch (error) {
+      console.log(`Error while getting leaderboard list ${error}`);
+      return res.status(500).json({
+        message: error.message
+      });
     }
-    catch(error){
-        console.log(`Error while getting leaderboard list ${error}`);
-        return res.status(500).json({
-            message:error.message
-        })
-    }
-}
+  };
 export { createScoreAndRoastMsg,leaderboardLists };
