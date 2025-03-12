@@ -321,7 +321,11 @@ const generateRoastMessageMethod = async (username) => {
               }
           }
       );
-        return true;
+        return {
+            message: `Roast generated successfully`,
+            roast: roast,
+            score: calculatedScore
+        };
     } catch (error) {
         console.error(error);
         return false;
