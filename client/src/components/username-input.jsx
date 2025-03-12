@@ -3,19 +3,66 @@ import { useState } from "react"
 import { Button } from "../../components/ui/button"
 import { Input } from "../../components/ui/input"
 import { Code2Icon, ClockIcon } from "lucide-react";
-
+import axios from "axios";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 export function UsernameInput() {
   const [isLoading, setIsLoading] = useState(false);
-
-  const handleSubmit = (e) => {
+  const [userData,setUserData] = useState({
+    usernames:""
+  })
+  const handleChange = (e) => {
+    setUserData({
+      ...userData,
+      [e.target.name]: e.target.value
+    })
+  }
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setIsLoading(true);
-  };
+    try {
+      setIsLoading(true);
+
+      if (!userData?.usernames) {
+        toast.error("Please provide valid usernames.");
+        setIsLoading(false);
+        return;
+      }
+
+      const usernames = userData.usernames.split(",").map(name => name.trim()); 
+      const payload = {
+        username: usernames[0] || "", 
+        leetcodeUsername: usernames[1] || "" 
+      };
+
+      const response = await axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/createScoreAndRoastMsg`,
+        payload
+      );
+
+      if (response.status >= 200 && response.status < 300) {
+        toast.success(`${response.data.roastMsg.roast.roastMessage} \n`);
+      } else {
+        toast.warning(response.data.message);
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      toast.error(error.response.data.message);
+    } finally {
+      setIsLoading(false); 
+    }
+};
+
   return (
     <div className="max-w-md mx-auto">
       <div className="text-center mb-4">
         <h2 className="text-xl font-semibold text-slate-200">Join the CommitKombat Leaderboard</h2>
-        <p className="text-slate-400 text-sm">Enter your GitHub and LeetCode usernames to track your combined stats</p>
+        <p className="text-gray-300 text-sm">
+  <span className="font-medium text-yellow-500">Note:</span> First, enter your GitHub username, followed by your LeetCode username,  
+  <span className="font-medium">separated by a comma</span>. <br /> 
+  Example: <span className="text-white">gautamkumar1, gautam-kum4r</span> <br />
+  <span className="text-red-500">Ensure you follow this format to avoid issues.</span>
+</p>
+
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-3">
@@ -25,6 +72,9 @@ export function UsernameInput() {
             type="text"
             placeholder="Your Github and LeetCode usernames"
             className="pl-10 bg-slate-900 border-slate-700 focus:border-cyan-500 focus:ring-cyan-500/20"
+            name="usernames"
+            value={userData.usernames}
+            onChange={handleChange}
           />
         </div>
         
@@ -52,6 +102,19 @@ export function UsernameInput() {
           Data is refreshed every 24 hours. Your ranking is calculated based on your public GitHub and LeetCode activity.
         </p>
       </div>
+      <ToastContainer
+          position="bottom-right"
+          autoClose={8000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick={false}
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          limit={1}
+          pauseOnHover
+          theme="dark"
+        />
     </div>
   );
 }
