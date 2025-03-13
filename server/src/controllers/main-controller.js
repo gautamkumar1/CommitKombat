@@ -3,6 +3,7 @@ import Stats from "../models/stats-model.js";
 import { generateRoastMessageMethod } from "./ai-controller.js";
 import { getGithubLeetcodeUserAllDataMethod } from "./github-controllers.js";
 import { createScoreMethod } from "./score-controllers.js";
+import { createUserDerailsMethod } from "./user-controller.js";
 
 const createScoreAndRoastMsg = async (req, res) => {
     try {
@@ -30,6 +31,8 @@ const createScoreAndRoastMsg = async (req, res) => {
         await createScoreMethod(username);
         //Step 3 - Generate the roast msg ,nicknames,emoji using GEMINI AI
         const roastMsg = await generateRoastMessageMethod(username);
+        // Step 4 - Create user details for profie card
+        const userDetails = await createUserDerailsMethod(username);
         return res.status(200).json({ message: "Successfully created score and roast message,emoji,Rank and nicknames", roastMsg });
     } catch (error) {
         console.log(error, "Error in main controller ++++++++++++++++++++++++++++++ \n");

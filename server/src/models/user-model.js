@@ -32,8 +32,19 @@ const userSchema = new mongoose.Schema({
     },
     score:{
         type: Number,
+    },
+    githubLink:{
+        type: String,
+    },
+    aiGeneratedRoast:{
+        type: String,
+    },
+    aiNickname:{
+        type: String,
+    },
+    aiEmoji:{
+        type: String,
     }
-
 });
 
 const User = mongoose.model("User", userSchema);
