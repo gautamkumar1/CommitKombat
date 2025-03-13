@@ -83,4 +83,16 @@ const leaderboardLists = async (req, res) => {
       });
     }
   };
-export { createScoreAndRoastMsg,leaderboardLists };
+
+  const testGithubApi = async (req,res) =>{
+    try {
+      const {username} = req.body;
+      const allData = await getGithubLeetcodeUserAllDataMethod(username);
+      return res.status(200).json({message:"Successfully got all data",allData});
+    } catch (error) {
+      console.log(error,"Error in testing github api");
+      return res.status(500).json({message:"Error in testing github api"});
+      
+    }
+  }
+export { createScoreAndRoastMsg,leaderboardLists,testGithubApi };
