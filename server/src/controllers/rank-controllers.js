@@ -2,26 +2,6 @@ import Score from "../models/score-model.js";
 import Rank from "../models/rank-model.js";
 import { getGithubUserInformation } from "./github-controllers.js";
 
-// const rankInitialize = async (username) =>{
-//     try {
-//         const userData = await getGithubUserInformation(username);
-//         const allScores = await Score.find().sort({ score: -1 });
-//             // Update ranks for all users
-//             const rankUpdates = allScores.map((s, index) => ({
-//                 updateOne: {
-//                     filter: { username: s.username },
-//                     update: { username: s.username, rank: index + 1 },
-//                     upsert: true
-//                 }
-//             }));
-//             await Rank.bulkWrite(rankUpdates);
-//             console.log("Rank updated successfully");
-//             return true;
-//     } catch (error) {
-//         console.log(error,"Error in rank initialization");
-//         return false;
-//     }
-// }
 const rankInitialize = async (username) => {
     try {
         // Fetch user details from GitHub
@@ -37,20 +17,27 @@ const rankInitialize = async (username) => {
         // Fetch all scores and sort by highest score
         const allScores = await Score.find().sort({ score: -1 });
 
+        // Fetch existing users from Rank collection
+        const existingUsers = await Rank.find({}, { username: 1, location: 1 });
+        const existingUserMap = new Map(existingUsers.map(user => [user.username, user.location]));
+
         // Update ranks for all users
-        const rankUpdates = allScores.map((s, index) => ({
-            updateOne: {
-                filter: { username: s.username },
-                update: {
-                    username: s.username,
-                    rank: index + 1,
-                    score: s.score,
-                    avatar_url: s.username === username ? userDetails.avatar_url : "",
-                    location: s.username === username ? userDetails.location : "",
+        const rankUpdates = allScores.map((s, index) => {
+            const existingLocation = existingUserMap.get(s.username) || "";
+            return {
+                updateOne: {
+                    filter: { username: s.username },
+                    update: {
+                        username: s.username,
+                        rank: index + 1,
+                        score: s.score,
+                        avatar_url: s.username === username ? userDetails.avatar_url : "",
+                        location: existingUserMap.has(s.username) ? existingLocation : userDetails.location,
+                    },
+                    upsert: true,
                 },
-                upsert: true,
-            },
-        }));
+            };
+        });
 
         await Rank.bulkWrite(rankUpdates);
         console.log("Rank updated successfully");
