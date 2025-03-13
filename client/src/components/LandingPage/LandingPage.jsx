@@ -8,11 +8,10 @@ import { RoastingLevels } from '../roasting-levels'
 
 function LandingPage() {
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen">
         <AppNavbar />
         <main>
             <HeroSection />
-            <Leaderboard />
             <HowItWorks />
             <RoastingLevels />
         </main>

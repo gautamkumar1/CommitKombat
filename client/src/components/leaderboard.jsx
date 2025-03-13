@@ -80,7 +80,11 @@ export function Leaderboard() {
           transition={{ duration: 0.8 }}
           className="text-center mb-12"
         >
-          <h2 className="text-3xl font-bold mb-4">Developer Roast Leaderboard 🔥</h2> <p className="text-default-500 max-w-2xl mx-auto"> Only the bravest survive here! Top devs get crowned... the rest get **brutally cooked** 💀🔥 Climb the ranks or get roasted into Stack Overflow ashes 🚽💩. </p>
+          <h2 className="text-3xl font-bold mb-4 text-white">Developer Roast Leaderboard 🔥</h2>
+          <p className="text-gray-400 max-w-2xl mx-auto">
+            Only the bravest survive here! Top devs get crowned... the rest get **brutally cooked** 💀🔥
+            Climb the ranks or get roasted into Stack Overflow ashes 🚽💩.
+          </p>
         </motion.div>
 
         <motion.div
@@ -89,24 +93,29 @@ export function Leaderboard() {
           viewport={{ once: true }}
           transition={{ duration: 0.8, delay: 0.2 }}
         >
-          <Card>
-            <CardHeader className="flex justify-between">
+          <Card className="p-4 bg-[#18191A] !important" style={{ backgroundColor: "#18191A" }}>
+            <CardHeader className="flex justify-between text-white">
               <h3 className="text-xl font-bold">Top Roasted Developers</h3>
               <Chip color="primary" variant="flat">Updated daily</Chip>
             </CardHeader>
             <CardBody>
-              <Table aria-label="Developer leaderboard">
+              <Table className="bg-[#19191B] text-white" style={{ backgroundColor: "#19191B" }}>
                 <TableHeader columns={columns}>
                   {(column) => (
-                    <TableColumn key={column.uid} align={column.uid === "score" ? "end" : "start"}>
+                    <TableColumn
+                      key={column.uid}
+                      align={column.uid === "score" ? "end" : "start"}
+                      className="bg-[#19191B] text-white"
+                      style={{ backgroundColor: "#19191B", color: "white" }}
+                    >
                       {column.name}
                     </TableColumn>
                   )}
                 </TableHeader>
                 <TableBody items={sortedUsers}>
                   {(user) => (
-                    <TableRow key={user.id}>
-                      <TableCell>
+                    <TableRow key={user.id} className="bg-[#19191B] text-white">
+                      <TableCell className="bg-[#19191B]" style={{ backgroundColor: "#19191B", color: "white" }}>
                         <User
                           name={user.name}
                           avatarProps={{
@@ -114,32 +123,25 @@ export function Leaderboard() {
                           }}
                         />
                       </TableCell>
-                      <TableCell>
+                      <TableCell className="bg-[#19191B]" style={{ backgroundColor: "#19191B", color: "white" }}>
                         <div className="flex items-center gap-2">
                           <span>{user.nickname}</span>
                         </div>
                       </TableCell>
-                      <TableCell>
+                      <TableCell className="bg-[#19191B]" style={{ backgroundColor: "#19191B", color: "white" }}>
                         <div className="flex items-center gap-2">
                           <span>{user.emoji}</span>
                         </div>
                       </TableCell>
-                      <TableCell>
+                      <TableCell className="bg-[#19191B]" style={{ backgroundColor: "#19191B", color: "white" }}>
                         <Tooltip content="Your Rank">
-                          <Chip
-                            color={getScoreColor(user.rank)}
-                            variant="flat"
-                          >
+                          <Chip color={getScoreColor(user.rank)} variant="flat">
                             {user.rank}
                           </Chip>
                         </Tooltip>
                       </TableCell>
-                      <TableCell>
-                        <Chip
-                          color={getScoreColor(user.totalScore)}
-                          size="lg"
-                          variant="flat"
-                        >
+                      <TableCell className="bg-[#19191B]" style={{ backgroundColor: "#19191B", color: "white" }}>
+                        <Chip color={getScoreColor(user.totalScore)} size="lg" variant="flat">
                           {user.totalScore}/100
                         </Chip>
                       </TableCell>

@@ -18,7 +18,7 @@ export function HeroSection() {
           transition={{ delay: 0.3, duration: 0.6 }}
           className="mb-6 inline-block"
         >
-          <Icon icon="lucide:flame" className="text-6xl text-danger" />
+          
         </motion.div>
 
         <motion.h1
@@ -49,7 +49,7 @@ export function HeroSection() {
             size="lg"
             color="primary"
             as="a"
-            href="#add-user"
+            href="/leaderboard"
           >
             Get Roasted Now 🔥
           </Button>

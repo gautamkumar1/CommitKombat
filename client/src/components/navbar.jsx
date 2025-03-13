@@ -2,8 +2,6 @@ import React from "react";
 import { Navbar, NavbarBrand, NavbarContent, NavbarItem, Link, Button } from "@heroui/react";
 import { Icon } from "@iconify/react";
 import { motion } from "framer-motion";
-import { ThemeSwitcher } from "./theme-switcher";
-import { Link as RouterLink } from 'react-router-dom';
 
 export function AppNavbar() {
   return (
@@ -38,14 +36,11 @@ export function AppNavbar() {
         </NavbarItem>
       </NavbarContent>
       <NavbarContent justify="end">
-        <NavbarItem>
-          <ThemeSwitcher />
-        </NavbarItem>
         <NavbarItem className="flex gap-2">
-          <Link href="https://github.com" target="_blank" aria-label="GitHub">
+          <Link href="https://github.com/gautamkumar1/CommitKombat" target="_blank" aria-label="GitHub">
             <Icon icon="lucide:github" className="text-orange-500 text-2xl" />
           </Link>
-          <Link href="https://twitter.com" target="_blank" aria-label="Twitter">
+          <Link href="https://x.com/Paradoxical_xD" target="_blank" aria-label="Twitter">
             <Icon icon="lucide:twitter" className="text-orange-500 text-2xl" />
           </Link>
         </NavbarItem>

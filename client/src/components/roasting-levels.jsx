@@ -35,7 +35,7 @@ const roastingLevels = [
 
 export function RoastingLevels() {
   return (
-    <section id="roasting-levels" className="py-16 px-6 bg-content1">
+    <section id="roasting-levels" className="py-16 px-6 bg-[#18191A]">
       <div className="max-w-6xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -45,7 +45,7 @@ export function RoastingLevels() {
           className="text-center mb-12"
         >
           <h2 className="text-3xl font-bold mb-4">Roasting Levels & Criteria</h2>
-          <p className="text-default-500 max-w-2xl mx-auto">
+          <p className="text-white-500 max-w-2xl mx-auto">
             Depending on your score, our AI will adjust its roasting intensity. Here's what you can expect at each level.
           </p>
         </motion.div>
@@ -59,12 +59,12 @@ export function RoastingLevels() {
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
             >
-              <Card className="h-full">
+              <Card className="h-full bg-[#18191A]">
                 <CardHeader className="flex gap-3">
                   <div className="text-3xl">{level.emoji}</div>
                   <div>
-                    <p className="text-lg font-semibold">{level.level}</p>
-                    <p className="text-small text-default-500">Score Range: {level.range}</p>
+                    <p className="text-white-500 font-semibold">{level.level}</p>
+                    <p className="text-small text-white-500">Score Range: {level.range}</p>
                   </div>
                 </CardHeader>
                 <CardBody className="pt-0">
@@ -73,7 +73,7 @@ export function RoastingLevels() {
                     color={level.color}
                     className="mb-4"
                   />
-                  <p className="text-default-600">{level.description}</p>
+                  <p className="text-white-500">{level.description}</p>
                 </CardBody>
               </Card>
             </motion.div>

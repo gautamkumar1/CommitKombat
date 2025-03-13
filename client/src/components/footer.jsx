@@ -24,14 +24,14 @@ export function Footer() {
           <div className="flex gap-6">
             <Link href="#how-it-works" color="foreground">How It Works</Link>
             <Link href="#roasting-levels" color="foreground">Roasting Levels</Link>
-            <Link href="#leaderboard" color="foreground">Leaderboard</Link>
+            <Link href="/leaderboard" color="foreground">Leaderboard</Link>
           </div>
           
           <div className="flex gap-4">
-            <Link href="https://github.com" target="_blank" aria-label="GitHub">
+            <Link href="https://github.com/gautamkumar1/CommitKombat" target="_blank" aria-label="GitHub">
               <Icon icon="lucide:github" className="text-2xl text-orange-500" />
             </Link>
-            <Link href="https://twitter.com" target="_blank" aria-label="Twitter">
+            <Link href="https://x.com/Paradoxical_xD" target="_blank" aria-label="Twitter">
               <Icon icon="lucide:twitter" className="text-2xl text-orange-500" />
             </Link>
           </div>
