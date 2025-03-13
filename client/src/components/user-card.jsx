@@ -1,138 +1,138 @@
-import { useState } from "react"
-import { Github, MapPin, Share2, Twitter } from "lucide-react"
-import { Badge } from "../../components/ui/badge"
-import { Button } from "../../components/ui/button"
-import { Card, CardContent, CardFooter, CardHeader } from "../../components/ui/card"
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../../components/ui/tooltip"
+import { useState } from "react";
+import { Github, MapPin, Share2, Twitter, X } from "lucide-react";
+import { Badge } from "../../components/ui/badge";
+import { Button } from "../../components/ui/button";
+import { Card, CardContent, CardFooter, CardHeader } from "../../components/ui/card";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../../components/ui/tooltip";
 
-export default function ProfileCard() {
-  const [copied, setCopied] = useState(false)
+export default function ProfileCard({ userDetails, onClose }) {
+  const [copied, setCopied] = useState(false);
 
-  // This would typically come from an API or props
-  const user = {
-    name: "Alex Johnson",
-    username: "@alexjohnson",
-    avatar: "/placeholder.svg?height=120&width=120",
-    followers: 1248,
-    following: 567,
-    bio: "Full-stack developer passionate about UI/UX and building meaningful products. Coffee enthusiast and occasional hiker.",
-    location: "San Francisco, CA",
-    rank: "Diamond",
-    roast: "Writes code so clean it makes soap jealous",
-    emoji: "🚀",
-    nickname: "Code Wizard",
-    github: "https://github.com/alexjohnson",
-    twitter: "https://twitter.com/alexjohnson",
-  }
+  if (!userDetails) return null;
 
-  const handleShare = () => {
-    navigator.clipboard.writeText(window.location.href)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
-  }
+  const handleShare = (e) => {
+    e.stopPropagation();
+    navigator.clipboard.writeText(window.location.href);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleCardClick = (e) => {
+    e.stopPropagation();
+  };
 
   return (
-    <TooltipProvider>
-      <Card className="w-full max-w-md mx-auto overflow-hidden bg-zinc-900 border-zinc-800 text-zinc-100">
-        <CardHeader className="relative pb-0">
-          <div className="absolute top-4 right-4">
-            <Badge variant="outline" className="bg-zinc-800 text-emerald-400 border-emerald-500/50 font-medium">
-              {user.rank}
-            </Badge>
-          </div>
-          <div className="flex flex-col items-center">
-            <div className="relative">
+    <div className="fixed inset-0 flex items-center justify-center z-50 bg-black/70" onClick={onClose}>
+      <TooltipProvider>
+        <Card
+          className="w-full max-w-md mx-auto overflow-hidden bg-zinc-900 border-zinc-800 text-zinc-100 relative"
+          onClick={handleCardClick}
+        >
+          <Button
+            variant="ghost"
+            size="icon"
+            className="absolute top-2 right-2 text-zinc-400 hover:text-white hover:bg-white/10 rounded-full z-10"
+            onClick={onClose}
+          >
+            <X className="h-5 w-5" />
+          </Button>
+          <CardHeader className="relative pb-0">
+            <div className="flex flex-col items-center">
               <div className="w-24 h-24 rounded-full overflow-hidden border-4 border-zinc-700">
-                <img src={user.avatar || "/placeholder.svg"} alt={user.name} className="w-full h-full object-cover" />
+                <img src={userDetails.avatar_url || "/placeholder.svg"} alt={userDetails.name} className="w-full h-full object-cover" />
               </div>
-              <div className="absolute -bottom-1 -right-1 bg-zinc-800 rounded-full p-1 border border-zinc-700">
-                <span className="text-xl">{user.emoji}</span>
+              <h2 className="mt-2 text-2xl font-bold text-white">{userDetails.name}</h2>
+              <p className="text-zinc-400">@{userDetails.username}</p>
+              <p className="mt-1 text-sm italic text-zinc-500 font-medium">"{userDetails.aiNickname}"</p> <br />
+              <Badge variant="outline" className="bg-zinc-800 text-emerald-400 border-emerald-500/50 font-medium">
+                Rank: {userDetails.rank}
+              </Badge>
+            </div>
+          </CardHeader>
+          <CardContent className="pt-4 pb-2">
+            <div className="flex justify-center space-x-8 mb-4">
+              <div className="text-center">
+                <p className="text-xl font-bold text-white">{userDetails.followers.toLocaleString()}</p>
+                <p className="text-xs text-zinc-400">Followers</p>
+              </div>
+              <div className="text-center">
+                <p className="text-xl font-bold text-white">{userDetails.following.toLocaleString()}</p>
+                <p className="text-xs text-zinc-400">Following</p>
+              </div>
+              <div className="text-center">
+                <p className="text-xl font-bold text-white">{userDetails.score.toLocaleString()}</p>
+                <p className="text-xs text-zinc-400">Score</p>
               </div>
             </div>
-            <h2 className="mt-4 text-2xl font-bold text-white">{user.name}</h2>
-            <p className="text-zinc-400">{user.username}</p>
-            <p className="mt-1 text-sm italic text-zinc-500 font-medium">"{user.nickname}"</p>
-          </div>
-        </CardHeader>
-        <CardContent className="pt-4 pb-2">
-          <div className="flex justify-center space-x-8 mb-4">
-            <div className="text-center">
-              <p className="text-xl font-bold text-white">{user.followers.toLocaleString()}</p>
-              <p className="text-xs text-zinc-400">Followers</p>
+            <p className="text-zinc-300 text-sm line-clamp-2 mb-3">{userDetails.bio ||  "🚨 Too lazy to write a bio, probably too lazy to write clean code. 🗑️" }</p>
+            <div className="flex items-center text-zinc-400 text-sm mb-3">
+              <MapPin className="w-4 h-4 mr-1" />
+              <span>{userDetails.location}</span>
             </div>
-            <div className="text-center">
-              <p className="text-xl font-bold text-white">{user.following.toLocaleString()}</p>
-              <p className="text-xs text-zinc-400">Following</p>
+            <div className="bg-zinc-800/50 rounded-lg p-3 mt-2">
+            <p className="text-purple-400 text-sm italic">AI-Generated Nickname: {userDetails.aiNickname}</p> <br />
+            <p className="text-yellow-400 text-sm italic">Signature Emoji: {userDetails.aiEmoji}</p> <br />
+              <p className="text-red-400 text-sm italic">
+              💀 Brutal Roast: {userDetails.aiGeneratedRoast}
+              </p>
             </div>
-          </div>
+          </CardContent>
+          <CardFooter className="flex justify-between border-t border-zinc-800 pt-4">
+            <div className="flex space-x-3">
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <a
+                    href={userDetails.githubLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-zinc-400 hover:text-white transition-colors"
+                  >
+                    <Github className="w-5 h-5" />
+                  </a>
+                </TooltipTrigger>
+                <TooltipContent side="bottom">
+                  <p>GitHub</p>
+                </TooltipContent>
+              </Tooltip>
 
-          <p className="text-zinc-300 text-sm line-clamp-2 mb-3">{user.bio}</p>
+              {userDetails.twitter_username && (
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <a
+                      href={`https://twitter.com/${userDetails.twitter_username}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-zinc-400 hover:text-white transition-colors"
+                    >
+                      <Twitter className="w-5 h-5" />
+                    </a>
+                  </TooltipTrigger>
+                  <TooltipContent side="bottom">
+                    <p>Twitter</p>
+                  </TooltipContent>
+                </Tooltip>
+              )}
+            </div>
 
-          <div className="flex items-center text-zinc-400 text-sm mb-3">
-            <MapPin className="w-4 h-4 mr-1" />
-            <span>{user.location}</span>
-          </div>
-
-          <div className="bg-zinc-800/50 rounded-lg p-3 mt-2">
-            <p className="text-zinc-400 text-sm italic">
-              <span className="text-emerald-400 font-medium">AI Roast:</span> {user.roast}
-            </p>
-          </div>
-        </CardContent>
-        <CardFooter className="flex justify-between border-t border-zinc-800 pt-4">
-          <div className="flex space-x-3">
-            <Tooltip>
+            <Tooltip open={copied} onOpenChange={setCopied}>
               <TooltipTrigger asChild>
-                <a
-                  href={user.github}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-zinc-400 hover:text-white transition-colors"
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleShare}
+                  className="bg-zinc-800 border-zinc-700 hover:bg-zinc-700 text-zinc-300"
                 >
-                  <Github className="w-5 h-5" />
-                </a>
+                  <Share2 className="w-4 h-4 mr-2" />
+                  Share
+                </Button>
               </TooltipTrigger>
               <TooltipContent side="bottom">
-                <p>GitHub</p>
+                <p>{copied ? "Copied!" : "Copy profile link"}</p>
               </TooltipContent>
             </Tooltip>
-
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <a
-                  href={user.twitter}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-zinc-400 hover:text-white transition-colors"
-                >
-                  <Twitter className="w-5 h-5" />
-                </a>
-              </TooltipTrigger>
-              <TooltipContent side="bottom">
-                <p>Twitter</p>
-              </TooltipContent>
-            </Tooltip>
-          </div>
-
-          <Tooltip open={copied} onOpenChange={setCopied}>
-            <TooltipTrigger asChild>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleShare}
-                className="bg-zinc-800 border-zinc-700 hover:bg-zinc-700 text-zinc-300"
-              >
-                <Share2 className="w-4 h-4 mr-2" />
-                Share
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent side="bottom">
-              <p>{copied ? "Copied!" : "Copy profile link"}</p>
-            </TooltipContent>
-          </Tooltip>
-        </CardFooter>
-      </Card>
-    </TooltipProvider>
-  )
+          </CardFooter>
+        </Card>
+      </TooltipProvider>
+    </div>
+  );
 }
-

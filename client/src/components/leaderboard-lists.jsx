@@ -4,7 +4,9 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from ".
 import { Avatar, AvatarFallback, AvatarImage } from "../../components/ui/avatar"
 import { Badge } from "../../components/ui/badge"
 import { Input } from "../../components/ui/input"
+import { Button } from "../../components/ui/button"
 import axios from "axios"
+import ProfileCard from "./user-card"
 
 export function Leaderboard() {
   const [isLoading, setIsLoading] = useState(true)
@@ -15,6 +17,8 @@ export function Leaderboard() {
   const [currentPage, setCurrentPage] = useState(1)
   const [searchQuery, setSearchQuery] = useState("")
   const [debouncedSearch, setDebouncedSearch] = useState("")
+  const [showProfileModal, setShowProfileModal] = useState(false)
+  const [selectedUserDetails, setSelectedUserDetails] = useState(null)
   
   // Handle search input change
   const handleSearchChange = (e) => {
@@ -48,6 +52,33 @@ export function Leaderboard() {
     } finally {
       setIsLoading(false)
     }
+  }
+  
+  const getUserDetails = async (username) => {
+    try {
+      setIsLoading(true)
+      const response = await axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/getUserDetailsByUsername`,
+        { username }
+      )
+      if (response.status === 200) {
+        setSelectedUserDetails(response.data.userData)
+        setShowProfileModal(true)
+      }
+    } catch (error) {
+      console.log("Error fetching user details:", error)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+  
+  const handleViewDetails = (username) => {
+    getUserDetails(username)
+  }
+  
+  const closeProfileModal = () => {
+    setShowProfileModal(false)
+    setSelectedUserDetails(null)
   }
   
   // Fetch data on component mount and when search or pagination changes
@@ -127,6 +158,7 @@ export function Leaderboard() {
                   <span>Score</span>
                 </div>
               </TableHead>
+              <TableHead className="text-center">Profile Card</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -182,11 +214,21 @@ export function Leaderboard() {
                       </span>
                     </div>
                   </TableCell>
+                  <TableCell className="text-center">
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      className="bg-indigo-900/50 hover:bg-indigo-800 text-cyan-300 border-indigo-800/50"
+                      onClick={() => handleViewDetails(user.username)}
+                    >
+                      View Details
+                    </Button>
+                  </TableCell>
                 </TableRow>
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={5} className="text-center py-8 text-slate-400">
+                <TableCell colSpan={6} className="text-center py-8 text-slate-400">
                   {debouncedSearch 
                     ? `No results found for "${debouncedSearch}"`
                     : "No leaderboard data available"
@@ -219,6 +261,14 @@ export function Leaderboard() {
             Next
           </button>
         </div>
+      )}
+      
+      {/* Profile Card Modal */}
+      {showProfileModal && selectedUserDetails && (
+        <ProfileCard 
+          userDetails={selectedUserDetails}
+          onClose={closeProfileModal}
+        />
       )}
     </div>
   )
