@@ -17,13 +17,18 @@ const rankInitialize = async (username) => {
         // Fetch all scores and sort by highest score
         const allScores = await Score.find().sort({ score: -1 });
 
-        // Fetch existing users from Rank collection
-        const existingUsers = await Rank.find({}, { username: 1, location: 1 });
-        const existingUserMap = new Map(existingUsers.map(user => [user.username, user.location]));
+        // Fetch existing users from Rank collection (including avatar_url)
+        const existingUsers = await Rank.find({}, { username: 1, location: 1, avatar_url: 1 });
+        const existingUserMap = new Map(existingUsers.map(user => [user.username, { 
+            location: user.location, 
+            avatar_url: user.avatar_url 
+        }]));
 
         // Update ranks for all users
         const rankUpdates = allScores.map((s, index) => {
-            const existingLocation = existingUserMap.get(s.username) || "";
+            const existingData = existingUserMap.get(s.username) || { location: "", avatar_url: "" };
+            const newAvatarUrl = s.username === username && userDetails.avatar_url ? userDetails.avatar_url : existingData.avatar_url;
+
             return {
                 updateOne: {
                     filter: { username: s.username },
@@ -31,8 +36,8 @@ const rankInitialize = async (username) => {
                         username: s.username,
                         rank: index + 1,
                         score: s.score,
-                        avatar_url: s.username === username ? userDetails.avatar_url : "",
-                        location: existingUserMap.has(s.username) ? existingLocation : userDetails.location,
+                        avatar_url: newAvatarUrl, 
+                        location: existingUserMap.has(s.username) ? existingData.location : userDetails.location,
                     },
                     upsert: true,
                 },
