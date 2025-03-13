@@ -36,6 +36,18 @@ const createUserDerailsMethod = async (username) => {
         return ({message:"Error in creating user details"})
     }
 }
-
-
-export {createUserDerailsMethod}
+const getUserDetailsByUsername = async (req, res) => {
+    try {
+        const {username} = req.body;
+        const userData = await User.findOne({username:username});
+        if(!userData){
+            return res.status(400).json({message:"User not found"});
+        }
+        return res.status(200).json({message:"User details found successfully", userData});
+    } catch (error) {
+        console.log(error,"Error in getting user details");
+        return res.status(500).json({message:"Error in getting user details"});
+        
+    }
+}
+export {createUserDerailsMethod,getUserDetailsByUsername}
