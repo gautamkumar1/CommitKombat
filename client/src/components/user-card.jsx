@@ -4,18 +4,39 @@ import { Badge } from "../../components/ui/badge";
 import { Button } from "../../components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader } from "../../components/ui/card";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../../components/ui/tooltip";
-
+import html2canvas from "html2canvas";
 export default function ProfileCard({ userDetails, onClose }) {
   const [copied, setCopied] = useState(false);
 
   if (!userDetails) return null;
+const handleShare = async (e) => {
+  e.stopPropagation();
 
-  const handleShare = (e) => {
-    e.stopPropagation();
-    navigator.clipboard.writeText(window.location.href);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
+  const cardElement = document.querySelector(".profile-card");
+  if (!cardElement) return;
+
+  try {
+    const canvas = await html2canvas(cardElement, {
+      scale: 2, 
+      useCORS: true, 
+    });
+
+    const imageBlob = await new Promise((resolve) => canvas.toBlob(resolve, "image/png"));
+    const file = new File([imageBlob], "profile.png", { type: "image/png" });
+
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+      await navigator.share({
+        files: [file],
+        title: "Check out this profile!",
+        text: `🔥 Check out ${userDetails.name}'s profile! 🚀\n#ProfileShare`,
+      });
+    } else {
+      alert("Sharing not supported on this browser.");
+    }
+  } catch (error) {
+    console.error("Error sharing:", error);
+  }
+};
 
   const handleCardClick = (e) => {
     e.stopPropagation();
@@ -25,7 +46,7 @@ export default function ProfileCard({ userDetails, onClose }) {
     <div className="fixed inset-0 flex items-center justify-center z-50 bg-black/70" onClick={onClose}>
       <TooltipProvider>
         <Card
-          className="w-full max-w-md mx-auto overflow-hidden bg-zinc-900 border-zinc-800 text-zinc-100 relative"
+          className="profile-card w-full max-w-md mx-auto overflow-hidden bg-zinc-900 border-zinc-800 text-zinc-100 relative"
           onClick={handleCardClick}
         >
           <Button
