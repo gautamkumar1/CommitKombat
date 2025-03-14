@@ -2,7 +2,8 @@
 <div align="center">
   <br />
     
-  ![Portfolio2Min Image](https://github.com/user-attachments/assets/5b09af92-7826-4d9c-97ec-bed45018fa44)
+  
+![commitKombat](https://github.com/user-attachments/assets/3f0d5c55-838e-4ae8-a067-bf4dec72c885)
 
 
   <br />
