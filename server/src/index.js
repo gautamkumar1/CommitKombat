@@ -27,6 +27,18 @@ app.use("/api/v1", scoreRoutes);
 app.use("/api/v1", rankRoutes);
 app.use("/api/v1", aiRoutes);
 app.use("/api/v1", mainRoutes);
+const keepAlive = () => {
+  const url = 'https://commitkombat-2.onrender.com';
+  setInterval(async () => {
+    try {
+      const response = await fetch(url);
+      console.log('Keep-alive ping sent, status:', response.status);
+    } catch (error) {
+      console.error('Keep-alive ping failed:', error);
+    }
+  }, 840000); // 14 minutes
+}
+keepAlive();
 connectDB().then(()=>{
   app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
